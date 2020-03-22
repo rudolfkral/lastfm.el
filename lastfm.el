@@ -53,35 +53,45 @@
 (require 'xdg)
 (require 's)
 
+;;;###autoload
 (defgroup lastfm ()
   "Customize Last.fm API."
   :group 'music)
 
+;;;###autoload
 (defcustom lastfm-enable-doc-generation nil
   "If t, generate markdown documentation at load time.
 Only used for development purposes."
   :type 'boolean
   :group 'lastfm)
 
+;;;###autoload
 (defconst lastfm--api-doc-string ""
   "Holds the documentation for all exported functions into this variable.
 It is filled at load time by each `lastfm--defmethod' and saved in
 README_api.md if `lastfm-enable-doc-generation' is t.")
 
 ;;;; Configuration and setup
+;;;###autoload
 (defconst lastfm--url "http://ws.audioscrobbler.com/2.0/"
   "The URL for the last.fm API version 2.")
 
+;;;###autoload
 (defconst lastfm--config-file-name "/.lastfmrc"
   "Name of the user config file for lastfm.")
 
 (defconst lastfm--config-file-path nil
+;;;###autoload
   "Complete path of the user config file for lastfm.")
 
 ;; The values of these configs are taken from the user config file.
+;;;###autoload
 (defconst lastfm--api-key nil)
+;;;###autoload
 (defconst lastfm--shared-secret nil)
+;;;###autoload
 (defconst lastfm--username nil)
+;;;###autoload
 (defconst lastfm--sk nil)
 
 (defun lastfm--config-file ()
@@ -141,6 +151,7 @@ README_api.md if `lastfm-enable-doc-generation' is t.")
     (lastfm--set-config-parameters))
   lastfm--sk)
 
+;;;###autoload
 (defun lastfm-generate-session-key ()
   "Generate a session key and save it in the .lastfmrc file.
 The user needs to grant Last.fm access to his/her application.
@@ -240,224 +251,277 @@ extract and to build the request response."
            ;; Ignore the error and do nothing.
            (user-error nil))))))
 
+;;;###autoload (autoload 'lastfm-album-get-info "lastfm.el")
 (lastfm--defmethod album.getInfo (artist album)
   "Get the metadata and tracklist for an album on Last.fm using the album name."
   :no ("track artist name" "track > name" "duration"))
 
+;;;###autoload (autoload 'lastfm-album-get-tags "lastfm.el")
 (lastfm--defmethod album.getTags (artist album)
   "Get the tags applied by an individual user to an album on Last.fm."
   :yes ("tag name" "tag count"))
 
+;;;###autoload (autoload 'lastfm-album-get-top-tags "lastfm.el")
 (lastfm--defmethod album.getTopTags (artist album)
   "Get the top tags for an album on Last.fm, ordered by popularity."
   :no ("tag name" "tag count"))
 
+;;;###autoload (autoload 'lastfm-album-remove-tag "lastfm.el")
 (lastfm--defmethod album.removeTag (artist album tag)
   "Remove a user's tag from an album."
   :yes ("lfm"))
 
+;;;###autoload (autoload 'lastfm-album-search "lastfm.el")
 (lastfm--defmethod album.search (album (limit 10))
   "Search for an album by name. Returns album matches sorted by relevance."
   :no ("album artist" "album name"))
 
+;;;###autoload (autoload 'lastfm-artist-add-tags "lastfm.el")
 (lastfm--defmethod artist.addTags (artist tags)
   "Tag an artist with one or more user supplied tags."
   :yes ("lfm"))
 
+;;;###autoload (autoload 'lastfm-artist-get-correction "lastfm.el")
 (lastfm--defmethod artist.getCorrection (artist)
   "Check whether the artist has a correction to a canonical artist."
   :no ("artist name"))
 
+;;;###autoload (autoload 'lastfm-artist-get-info "lastfm.el")
 (lastfm--defmethod artist.getInfo (artist)
   "Get the metadata for an artist. Includes biography, max 300 characters."
   :no ("bio summary" "listeners" "playcount" "similar artist name" "tags tag name"))
 
+;;;###autoload (autoload 'lastfm-artist-get-similar "lastfm.el")
 (lastfm--defmethod artist.getSimilar (artist (limit 10) (user (lastfm--username)))
   "Get all the artists similar to this artist."
   :no ("artist name"))
 
+;;;###autoload (autoload 'lastfm-artist-get-tags "lastfm.el")
 (lastfm--defmethod artist.getTags (artist)
   "Get the tags applied by an individual user to an artist on Last.fm."
   :yes ("tag name"))
 
+;;;###autoload (autoload 'lastfm-artist-get-top-albums "lastfm.el")
 (lastfm--defmethod artist.getTopAlbums (artist (limit 10))
   "Get the top albums for an artist, ordered by popularity."
   :no ("album > name"))
 
+;;;###autoload (autoload 'lastfm-artist-get-top-tags "lastfm.el")
 (lastfm--defmethod artist.getTopTags (artist)
   "Get the top tags for an artist, ordered by popularity."
   :no ("tag name"))
 
+;;;###autoload (autoload 'lastfm-artist-get-top-tracks "lastfm.el")
 (lastfm--defmethod artist.getTopTracks (artist (limit 10) (page 1))
   "Get the top tracks by an artist, ordered by popularity."
   :no ("track artist name" "track > name" "playcount" "listeners"))
 
+;;;###autoload (autoload 'lastfm-artist-remove-tag "lastfm.el")
 (lastfm--defmethod artist.removeTag (artist tag)
   "Remove a user's tag from an artist."
   :yes ("lfm"))
 
+;;;###autoload (autoload 'lastfm-artist-search "lastfm.el")
 (lastfm--defmethod artist.search (artist (limit 10))
   "Search for an artist by name. Returns artist matches sorted by relevance."
   :no ("artist name"))
 
+;;;###autoload (autoload 'lastfm-auth-get-token "lastfm.el")
 (lastfm--defmethod auth.getToken ()
   "Fetch a session key for a user (3rd step in the auth process)."
   :sk ("token"))
 
+;;;###autoload (autoload 'lastfm-auth-get-session "lastfm.el")
 (lastfm--defmethod auth.getSession (token)
   "Fetch an unathorized request token (2nd step of the auth process)."
   :sk ("session key"))
 
+;;;###autoload (autoload 'lastfm-chart-get-top-artists "lastfm.el")
 (lastfm--defmethod chart.getTopArtists ((limit 10))
   "Get the top artists chart."
   :no ("artist name" "playcount" "listeners"))
 
+;;;###autoload (autoload 'lastfm-chart-get-top-tags "lastfm.el")
 (lastfm--defmethod chart.getTopTags ((limit 10))
   "Get the top tags chart."
   :no ("tag-name"))
 
+;;;###autoload (autoload 'lastfm-chart-get-top-tracks "lastfm.el")
 (lastfm--defmethod chart.getTopTracks ((limit 10))
   "Get the top tracks chart."
   :no ("artist > name" "track > name" "playcount" "listeners"))
 
+;;;###autoload (autoload 'lastfm-geo-get-top-artists "lastfm.el")
 (lastfm--defmethod geo.getTopArtists (country (limit 10) (page 1))
   "Get the most popular artists on Last.fm by country."
   :no ("artist name" "playcount"))
 
+;;;###autoload (autoload 'lastfm-geo-get-top-tracks "lastfm.el")
 (lastfm--defmethod geo.getTopTracks (country (limit 10) (page 1))
   "Get the most popular tracks on Last.fm last week by country."
   :no ("artist > name" "track > name" "playcount"))
 
+;;;###autoload (autoload 'lastfm-library-get-artists "lastfm.el")
 (lastfm--defmethod library.getArtists ((user (lastfm--username)) (limit 50) (page 1))
   "A list of all the artists in a user's library."
   :no ("artist name" "playcount" "tagcount"))
 
+;;;###autoload (autoload 'lastfm-tag-get-info "lastfm.el")
 (lastfm--defmethod tag.getInfo (tag)
   "Get the metadata for a TAG."
   :no ("tag summary"))
 
+;;;###autoload (autoload 'lastfm-tag-get-similar "lastfm.el")
 (lastfm--defmethod tag.getSimilar (tag)
   "Search for tags similar to this one, based on listening data."
   :no ("tag name"))
 
+;;;###autoload (autoload 'lastfm-tag-get-top-albums "lastfm.el")
 (lastfm--defmethod tag.getTopAlbums (tag (limit 10) (page 1))
   "Get the top albums tagged by this tag, ordered by tag count."
   :no ("artist > name" "album > name"))
 
+;;;###autoload (autoload 'lastfm-tag-get-top-artists "lastfm.el")
 (lastfm--defmethod tag.getTopArtists (tag (limit 10) (page 1))
   "Get the top artists tagged by this tag, ordered by tag count."
   :no ("artist name"))
 
+;;;###autoload (autoload 'lastfm-tag-get-top-tags "lastfm.el")
 (lastfm--defmethod tag.getTopTags ()
   "Fetches the top global tags on Last.fm, sorted by number of times used."
   :no ("tag name"))
 
+;;;###autoload (autoload 'lastfm-tag-get-top-tracks "lastfm.el")
 (lastfm--defmethod tag.getTopTracks (tag (limit 10) (page 1))
   "Get the top tracks tagged by this tag, ordered by tag count."
   :no ("artist > name" "track > name"))
 
+;;;###autoload (autoload 'lastfm-track-add-tags "lastfm.el")
 (lastfm--defmethod track.addTags (artist track tags)
   "Tag an album using a list of user supplied tags."
   :yes ("lfm"))
 
+;;;###autoload (autoload 'lastfm-track-get-corretion "lastfm.el")
 (lastfm--defmethod track.getCorrection (artist track)
   "Check whether the supplied track has a correction to a canonical track."
   :no ("artist > name" "track > name"))
 
+;;;###autoload (autoload 'lastfm-track-get-info "lastfm.el")
 (lastfm--defmethod track.getInfo (artist track)
   "Get the track metadata."
   :no ("album title" "tag name" "playcount" "listeners"))
 
+;;;###autoload (autoload 'lastfm-track-get-similar "lastfm.el")
 (lastfm--defmethod track.getSimilar (artist track (limit 10))
   "Get similar tracks to this one, based on listening data."
   :no ("artist > name" "track > name"))
 
+;;;###autoload (autoload 'lastfm-track-get-tags "lastfm.el")
 (lastfm--defmethod track.getTags (artist track)
   "Get the tags applied by an individual user to a track."
   :yes ("name"))
 
+;;;###autoload (autoload 'lastfm-track-get-top-tags "lastfm.el")
 (lastfm--defmethod track.getTopTags (artist track)
   "Get the top tags for this track, ordered by tag count."
   :no ("name"))
 
+;;;###autoload (autoload 'lastfm-track-love "lastfm.el")
 (lastfm--defmethod track.love (artist track)
   "Love a track for a user profile."
   :yes ("lfm"))
 
+;;;###autoload (autoload 'lastfm-track-remove-tag "lastfm.el")
 (lastfm--defmethod track.removeTag (artist track tag)
   "Remove a user's tag from a track."
   :yes ("lfm"))
 
+;;;###autoload (autoload 'lastfm-track-scrobble "lastfm.el")
 (lastfm--defmethod track.scrobble (artist track timestamp)
   "Add a track to the user listened tracks."
   :yes ("lfm"))
 
+;;;###autoload (autoload 'lastfm-track-search "lastfm.el")
 (lastfm--defmethod track.search (track (artist nil) (limit 10) (page 1))
   "Search for a track by track name. Returned matches are sorted by relevance."
   :no ("track > artist" "track > name"))
 
+;;;###autoload (autoload 'lastfm-track-unlove "lastfm.el")
 (lastfm--defmethod track.unlove (artist track)
   "UnLove a track for a user profile."
   :yes ("lfm"))
 
+;;;###autoload (autoload 'lastfm-track-update-now-playing "lastfm.el")
 (lastfm--defmethod track.updateNowPlaying
   (artist track (album nil) (tracknumber nil) (context nil)
           (duration nil) (albumartist nil))
   "Notify Last.fm that a user has started listening to a track."
   :yes ("lfm"))
 
+;;;###autoload (autoload 'lastfm-user-getfriends "lastfm.el")
 (lastfm--defmethod user.getfriends (user (limit 10) (page 1))
   "Get a list of the user's friends on Last.fm."
   :no ("name" "realname" "country" "age" "gender" "subscriber" "playcount"))
 
+;;;###autoload (autoload 'lastfm-user-get-info "lastfm.el")
 (lastfm--defmethod user.getInfo ((user (lastfm--username)))
   "Get information about a USER profile."
   :no ("name" "realname" "country" "age" "gender" "subscriber" "playcount"))
 
+;;;###autoload (autoload 'lastfm-user-get-loved-tracks "lastfm.el")
 (lastfm--defmethod user.getLovedTracks ((user (lastfm--username)) (limit 10) (page 1))
   "Get the last LIMIT number of tracks loved by a USER."
   :no ("artist > name" "track > name"))
 
+;;;###autoload (autoload 'lastfm-user-get-personal-tags "lastfm.el")
 (lastfm--defmethod user.getPersonalTags
   (tag taggingtype (user (lastfm--username)) (limit 10) (page 1))
   "Get the user's personal TAGs."
   :no ("artist name"))
 
+;;;###autoload (autoload 'lastfm-user-get-recent-tracks "lastfm.el")
 (lastfm--defmethod user.getRecentTracks
   ((user (lastfm--username)) (limit 10) (page 1) (from nil) (to nil) (extended 0))
   "Get a list of the recent tracks listened to by this user."
   :no ("track > artist" "track > name" "date"))
 
+;;;###autoload (autoload 'lastfm-user-get-top-albums "lastfm.el")
 (lastfm--defmethod user.getTopAlbums
   ((user (lastfm--username)) (period nil) (limit nil) (page nil))
   "Get the top albums listened to by a user"
   :no ("artist > name" "album > name" "playcount"))
 
+;;;###autoload (autoload 'lastfm-user-get-top-artists "lastfm.el")
 (lastfm--defmethod user.getTopArtists
   ((user (lastfm--username)) (period nil) (limit nil) (page nil))
   "Get the top artists listened to by a user."
   :no ("artist name" "playcount"))
 
+;;;###autoload (autoload 'lastfm-user-get-top-tags "lastfm.el")
 (lastfm--defmethod user.getTopTags
   ((user (lastfm--username)) (limit 10))
   "Get the top tags used by this user."
   :no ("tag name"))
 
+;;;###autoload (autoload 'lastfm-user-get-top-tracks "lastfm.el")
 (lastfm--defmethod user.getTopTracks
   ((user (lastfm--username)) (period nil) (limit nil) (page nil))
   "Get the top tracks listened to by a user. "
   :no ("artist > name" "track > name" "playcount"))
 
+;;;###autoload (autoload 'lastfm-user-get-weekly-album-chart "lastfm.el")
 (lastfm--defmethod user.getWeeklyAlbumChart
   ((user (lastfm--username)) (from nil) (to nil))
   "Get an album chart for a user profile, for a given date range."
   :no ("album > artist" "album > name" "playcount"))
 
+;;;###autoload (autoload 'lastfm-user-get-weekly-artist-chart "lastfm.el")
 (lastfm--defmethod user.getWeeklyArtistChart
   ((user (lastfm--username)) (from nil) (to nil))
   "Get an artist chart for a user profile, for a given date range."
   :no ("artist > name" "playcount"))
 
+;;;###autoload (autoload 'lastfm-user-get-weekly-track-chart "lastfm.el")
 (lastfm--defmethod user.getWeeklyTrackChart
   ((user (lastfm--username)) (from nil) (to nil))
   "Get a track chart for a user profile, for a given date range."
